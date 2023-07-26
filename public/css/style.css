@@ -1,0 +1,83 @@
+.container-fluid{
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+h1,p{
+    padding-left: 50px;
+    padding-right: 50px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    outline: none;
+}
+input{
+    padding-top: 20px;
+    width: 50%;
+    margin-top: 20px;
+    border: 2px solid black;
+    box-shadow: 2px 2px 3px red;
+}
+textarea{
+    border: 2px solid black;
+    padding-top: 20px;
+    width: 50%;
+    margin-top: 15px;
+    box-shadow: 2px 2px 3px red;
+}
+.ftxtarea{
+    margin-top: 20px;
+}
+.btn{
+    margin: 10px;
+    padding: 10px 25px;
+    background-color: #1abc9c;
+    font-size: 1.6rem;
+    border: 2px solid black;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+}
+.form-cl{
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+}
+.navbar{
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border: 0;
+    border-radius: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    letter-spacing: 5px;
+    
+}
+
+.nav{
+    font-size: 1.5rem;
+}
+
+.navbar-nav li a:hover {
+    color: red;
+}
+
+
+.foot{
+    position: relative;
+    display: flex;
+    text-align: center;
+    bottom: 0;
+    height: 60px;
+    margin-top: 25px;
+    font-size: 25px;
+    color: #000000;
+    justify-content: center;
+    align-items: center;
+}
+
