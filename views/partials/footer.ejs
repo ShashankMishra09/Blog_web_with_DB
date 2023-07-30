@@ -1,7 +1,43 @@
+<div class="foot">
 
-<div class="foot"><footer>Made shashank mishra</footer></div>    
+    <footer>Made shashank mishra</footer>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<!-- So as i was having a bit of problem while navigating through pages and keeping the dark mode on so i did a bit of cheating and searched it through internet -->
+    <script>
+        // Dark mode toggle script
+        $(document).ready(function () {
+            const darkModeBtn = $("#bt");
 
-    
+            // Check if dark mode is already enabled (on page load)
+            const isDarkModeEnabled = localStorage.getItem("darkModeEnabled") === "true";
+            if (isDarkModeEnabled) {
+                enableDarkMode();
+            }
 
+            darkModeBtn.click(function () {
+                $("nav").toggleClass("dark");
+                $("body").toggleClass("dark");
+                $("button").toggleClass("dark");
+
+                // Toggle the dark mode state in localStorage
+                const isCurrentlyDarkMode = $("body").hasClass("dark");
+                localStorage.setItem("darkModeEnabled", isCurrentlyDarkMode.toString());
+
+                // Update the button text
+                const newText = isCurrentlyDarkMode ? "Light Mode" : "Dark Mode";
+                darkModeBtn.text(newText);
+            });
+
+            function enableDarkMode() {
+                $("nav").addClass("dark");
+                $("body").addClass("dark");
+                $("button").addClass("dark");
+            }
+        });
+    </script>
+
+</div>
 </body>
+
 </html>

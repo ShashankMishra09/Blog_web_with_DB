@@ -58,12 +58,11 @@ textarea{
     letter-spacing: 5px;
     
 }
-
 .nav{
     font-size: 1.5rem;
 }
 
-.navbar-nav li a:hover {
+ul a:hover {
     color: red;
 }
 
@@ -81,3 +80,20 @@ textarea{
     align-items: center;
 }
 
+.dark{
+    background-color: #000000;
+    color: #1abc9c;
+}
+
+button{
+    background-color: azure;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #000000;
+    box-shadow: 4px 4px 0 red;
+    transition: transform 0.2s box-shadow 0.2s;
+}
+button:active{
+    transform: translateX(4px) translateY(4px); 
+    box-shadow: 0 0 0 red;
+}
