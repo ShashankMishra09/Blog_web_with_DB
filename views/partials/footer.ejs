@@ -9,16 +9,11 @@
         $(document).ready(function () {
             const darkModeBtn = $("#bt");
 
-            // Check if dark mode is already enabled (on page load)
-            const isDarkModeEnabled = localStorage.getItem("darkModeEnabled") === "true";
-            if (isDarkModeEnabled) {
-                enableDarkMode();
-            }
-
             darkModeBtn.click(function () {
                 $("nav").toggleClass("dark");
                 $("body").toggleClass("dark");
                 $("button").toggleClass("dark");
+                $("footer").toggleClass("dark");
 
                 // Toggle the dark mode state in localStorage
                 const isCurrentlyDarkMode = $("body").hasClass("dark");
@@ -33,6 +28,7 @@
                 $("nav").addClass("dark");
                 $("body").addClass("dark");
                 $("button").addClass("dark");
+                $("footer").addClass("dark");
             }
         });
     </script>

@@ -20,7 +20,16 @@ const postSchema = {
   title: String,
   content: String,
 };
+
+const selfSchema = {
+  email: String,
+  password: String,
+  selfBlog: postSchema
+}
+
 const Post = mongoose.model("Post", postSchema);
+const User = mongoose.model("User", selfSchema);
+
 app.set('view engine', 'ejs')
 
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -45,12 +54,19 @@ app.get("/", async (req, res) => {
 app.get("/about", (req, res) => {
   res.render("about", { contentAbout: aboutContent })
 })
+
 app.get("/contact", (req, res) => {
   res.render("contact", { contentContact: contactContent })
 })
+
 app.get("/compose", (req, res) => {
   res.render("compose")
 })
+
+app.get("/login",(req,res)=>{
+  res.render("login")
+})
+
 app.post("/compose", async (req, res) => {
   const post = new Post({
     title: req.body.postTitle,
@@ -65,6 +81,20 @@ app.post("/compose", async (req, res) => {
     res.status(500).render("error", { errorMessage: "Something went wrong!" });
   }
 });
+
+app.post("/login", async (req, res)=>{
+  const user = new User({
+    email: req.body.username,
+    password: req.body.password
+  })
+  try {
+    await user.save();
+    res.redirect("/");
+  } catch (error) {
+    console.error("Error saving post:", error);
+    res.status(500).render("error", { errorMessage: "Something went wrong!" });
+  }
+})
 
 
 app.get("/posts/:postId", async function (req, res) {
@@ -83,6 +113,7 @@ app.get("/posts/:postId", async function (req, res) {
     res.status(404).render("error", { errorMessage: "Post not found!" });
   }
 });
+
 app.listen(port, () => {
   console.log(`We are running on ${port}`);
 })

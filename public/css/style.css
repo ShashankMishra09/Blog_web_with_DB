@@ -97,3 +97,19 @@ button:active{
     transform: translateX(4px) translateY(4px); 
     box-shadow: 0 0 0 red;
 }
+
+.login{
+    display: flex;
+    flex-direction: column;
+    /* width: 60%; */
+    margin: 20px auto;
+    justify-content: center;
+    align-items: center;
+    /* border: 2px solid black; */
+}
+
+.login input{
+    width: 100%;
+    border: 1px solid black;
+    box-shadow: 5px 5px 5px black;
+}
