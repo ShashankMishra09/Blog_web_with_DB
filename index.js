@@ -5,6 +5,8 @@ import bodyParser from "body-parser"
 import ejs from "ejs"
 import _ from "lodash"
 import mongoose from "mongoose";
+import session from "express-session";
+
 
 const homeStartingContent = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore commodi totam rem amet provident culpa, molestias quas explicabo fugiat. Consequatur, debitis? Natus aut illo ut. Autem labore obcaecati deserunt nulla architecto, eius minusLorem ipsum dolor sit amet consectetur adipisicing elit. Dolore commodi totam rem amet provident culpa, molestias quas explicabo fugiat. Consequatur, debitis? Natus aut illo ut. Autem labore obcaecati deserunt nulla architecto, eius minus."
 const aboutContent = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore commodi totam rem amet provident culpa, molestias quas explicabo fugiat. Consequatur, debitis? Natus aut illo ut. Autem labore obcaecati deserunt nulla architecto, eius minus."
@@ -34,6 +36,13 @@ app.set('view engine', 'ejs')
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static("public"))
+app.use(
+  session({
+    secret: "your_secret_key_here",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 
 // i have used async and await because the find(),findOne() and save() do not accept the callbacks you can use promise as well but don't use callbacks at all or you will get an error on the webpage that find()/save() does not accept callbacks
@@ -51,6 +60,12 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.post("/toggle-dark-mode", (req, res) => {
+  req.session.darkMode = !req.session.darkMode;
+  res.sendStatus(200);
+});
+
+
 app.get("/about", (req, res) => {
   res.render("about", { contentAbout: aboutContent })
 })
@@ -60,13 +75,43 @@ app.get("/contact", (req, res) => {
 })
 
 app.get("/compose", (req, res) => {
-  res.render("compose")
-})
+  if (req.session.isAuthenticated) {
+    res.render("compose");
+  } else {
+    res.send("Please login first");
+  }
+});
 
 app.get("/login",(req,res)=>{
   res.render("login")
 })
 
+app.get("/register",(req,res)=>{
+  res.render("register")
+})
+
+app.post("/register", async (req, res) => {
+  try {
+    const existingUser = await User.findOne({ email: req.body.username });
+
+    if (existingUser) {
+      // User with the given email already exists
+      res.send("You are already registered, please go to the login page.");
+
+    } else {
+      // Create a new user and save it to the database
+      const user = new User({
+        email: req.body.username,
+        password: req.body.password
+      });
+      await user.save();
+      res.redirect("/");
+    }
+  } catch (error) {
+    console.error("Error saving user:", error);
+    res.status(500).render("error", { errorMessage: "Something went wrong!" });
+  }
+});
 app.post("/compose", async (req, res) => {
   const post = new Post({
     title: req.body.postTitle,
@@ -82,19 +127,28 @@ app.post("/compose", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res)=>{
-  const user = new User({
-    email: req.body.username,
-    password: req.body.password
-  })
+app.post("/login", async (req, res) => {
   try {
-    await user.save();
-    res.redirect("/");
+    const existingUser = await User.findOne({
+      email: req.body.username,
+      password: req.body.password,
+    });
+
+    if (existingUser) {
+      // User with the given email and password exists
+      req.session.isAuthenticated = true;
+      req.session.user = { email: req.body.username };
+      res.redirect("/");
+    } else {
+      // Invalid login credentials
+      res.send("Your email or password is not correct or you are not registered yet");
+    }
   } catch (error) {
-    console.error("Error saving post:", error);
+    console.error("Error saving user:", error);
     res.status(500).render("error", { errorMessage: "Something went wrong!" });
   }
-})
+});
+
 
 
 app.get("/posts/:postId", async function (req, res) {
