@@ -15,6 +15,7 @@ const contactContent = "Lorem ipsum dolor sit amet consectetur adipisicing elit.
 const app = express()
 const port = 8000;
 let posts = [];
+let blogs= [];
 
 mongoose.connect("mongodb://0.0.0.0:27017/blogDB", { useNewUrlParser: true });
 
@@ -26,7 +27,8 @@ const postSchema = {
 const selfSchema = {
   email: String,
   password: String,
-  selfBlog: postSchema
+  title: String,
+  content: String
 }
 
 const Post = mongoose.model("Post", postSchema);
@@ -52,7 +54,8 @@ app.get("/", async (req, res) => {
     const posts = await Post.find({});
     res.render("home", {
       startingContent: homeStartingContent,
-      posts: posts
+      posts: posts,
+      user: req.session.isAuthenticated ? req.session.user : null
     });
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -64,7 +67,6 @@ app.post("/toggle-dark-mode", (req, res) => {
   req.session.darkMode = !req.session.darkMode;
   res.sendStatus(200);
 });
-
 
 app.get("/about", (req, res) => {
   res.render("about", { contentAbout: aboutContent })
@@ -83,11 +85,19 @@ app.get("/compose", (req, res) => {
 });
 
 app.get("/login",(req,res)=>{
-  res.render("login")
+  if (req.session.isAuthenticated) {
+    res.send("you are already logged in");
+  } else {
+    res.render("login");
+  }
 })
 
 app.get("/register",(req,res)=>{
-  res.render("register")
+  if (req.session.isAuthenticated) {
+    res.send("you are already registered");
+  } else {
+    res.render("register");
+  }
 })
 
 app.post("/register", async (req, res) => {
@@ -112,14 +122,19 @@ app.post("/register", async (req, res) => {
     res.status(500).render("error", { errorMessage: "Something went wrong!" });
   }
 });
+
 app.post("/compose", async (req, res) => {
   const post = new Post({
     title: req.body.postTitle,
     content: req.body.postBody
   });
-
+  const selfpost = new User({
+      title: req.body.postTitle,
+      content: req.body.postBody
+  })
   try {
     await post.save();
+    await selfpost.save();
     res.redirect("/");
   } catch (error) {
     console.error("Error saving post:", error);
@@ -167,6 +182,38 @@ app.get("/posts/:postId", async function (req, res) {
     res.status(404).render("error", { errorMessage: "Post not found!" });
   }
 });
+
+app.get("/myblog", async (req, res) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const user = await User.findOne({ email: req.session.user.email });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const selfBlogPost = user.selfBlog;
+    const blogs = [
+        {title: selfBlogPost.title},
+        {content: selfBlogPost.content},
+        {user: req.session.user}
+      // You can add more entries to the 'blogs' array if needed
+    ];
+
+    res.render("myblog", { blogs: blogs });
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    res.status(404).render("error", { errorMessage: "Post not found!" });
+  }
+});
+
+
+
+
+
 
 app.listen(port, () => {
   console.log(`We are running on ${port}`);

@@ -1,0 +1,12 @@
+<!-- myblog.ejs -->
+<%- include("partials/header.ejs") -%>
+
+<!-- Debugging: Log the content of the 'blogs' array -->
+<% console.log(blogs); %>
+
+<% blogs.forEach(blog => { %>
+  <h1><%= blog.title %></h1>
+  <p><%= blog.content %></p>
+<% }); %>
+
+<%- include("partials/footer.ejs") -%>
